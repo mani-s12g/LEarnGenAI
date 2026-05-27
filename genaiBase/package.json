@@ -1,0 +1,31 @@
+{
+  "name": "genai",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node src/index.js",
+    "start": "node -r ts-node/register src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mani-s12g/LEarnGenAI.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mani-s12g/LEarnGenAI/issues"
+  },
+  "homepage": "https://github.com/mani-s12g/LEarnGenAI#readme",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "openai": "^6.39.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "ts-node": "^10.9.2",
+    "typescipt": "^1.0.0"
+  }
+}
