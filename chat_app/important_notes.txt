@@ -1,0 +1,131 @@
+So if we want to run .ts files in node.js before we had to do following:
+we should run cmd in terminal: 
+tsc -w 
+This above cmd compiles the index.ts file to index.js file and store it in dist folder as index.js file (run in 1st terminal, we dont need to stop this cmd(dont do ctrl + c till end), it will keep running in background, it will automatically compiles files whenever we make changes in our files so, when we run cmd -> npm run dev in 2nd terminal, we dont have to compile again and again, it happens automatically, so tsc -w acts same as nodemon)
+
+So when we run cmd in terminal:
+npm run dev
+then node.js runs the index.js file from this following dist folder
+
+in scripts -> dev, we have mentioned this path of the file to be run by node.js
+"scripts": {
+    "dev": "node dist/index.js"
+  },
+
+So now latest thing is that instead of doing all these above things we can just do below mentioned things
+
+Q: what is meaning of this ? 
+"scripts": {
+    "start": "ts-node src/index.ts",
+    "build": "tsc"
+  },
+explain ?
+
+A: Ran command: `ls`
+
+These are **npm scripts** defined in your project's [package.json](file:///e:/GenAI/chat_app/package.json). They act as shortcuts or aliases for commands you run in your terminal. 
+
+Instead of typing the long commands, you can run them using `npm run <script-name>`.
+
+Here is the breakdown of what each script does:
+
+---
+
+### 1. `"start": "ts-node src/index.ts"`
+* **How to run it:** `npm start` (or `npm run start`)
+* **What it does:** It runs your TypeScript entry file ([src/index.ts](file:///e:/GenAI/chat_app/src/index.ts)) directly in a Node.js environment without having to compile it to JavaScript first.
+* **Under the hood:**
+  * **`ts-node`**: A TypeScript execution engine for Node.js. It JIT (Just-In-Time) compiles the TypeScript code in-memory on the fly and executes it.
+  * **`src/index.ts`**: The path to the TypeScript file you want to execute.
+* **Best for:** Development and quick testing, as it saves you the step of manually compiling files.
+
+---
+
+### 2. `"build": "tsc"`
+* **How to run it:** `npm run build`
+* **What it does:** It compiles (transpiles) all the TypeScript (`.ts`) files in your project into standard JavaScript (`.js`) files.
+* **Under the hood:**
+  * **`tsc`**: The official TypeScript Compiler. It reads your configuration from [tsconfig.json](file:///e:/GenAI/chat_app/tsconfig.json) and compiles your source code.
+* **Best for:** Production. Node.js cannot run `.ts` files directly in production environments (due to performance overhead of `ts-node`), so you compile them to `.js` first and then run the compiled JavaScript.
+
+
+Q: can u explain this again ?i didnt understand it
+Node.js cannot run .ts files directly in production environments (due to performance overhead of ts-node)
+
+A: Viewed package.json:1-13
+
+To understand why this is, it helps to look at how **TypeScript** works compared to **JavaScript**.
+
+### 1. Node.js Only Speaks JavaScript
+The Node.js runtime (which runs your code on a server) does not natively understand TypeScript (`.ts`). It only understands JavaScript (`.js`).
+
+To run TypeScript, the code must be translated (compiled) into JavaScript first.
+
+---
+
+### 2. How `ts-node` Works (Development)
+When you run `npm start` (which uses `ts-node`):
+1. **On the fly**, `ts-node` intercepts your `.ts` file.
+2. It compiles it into JavaScript in the computer's memory (RAM).
+3. It hands that temporary JavaScript to Node.js to run.
+
+**Why this is slow for Production:**
+Every time your application starts up or imports a new file, `ts-node` has to spend time compiling it on the spot. This consumes extra CPU and memory (RAM), which slows down your server's startup time and performance. 
+
+---
+
+### 3. How `tsc` Works (Production)
+When you run `npm run build` (which uses `tsc`):
+1. It translates all your `.ts` files into `.js` files **once** and saves them on your hard drive (usually in a folder like `dist/` or `build/`).
+2. Once built, you no longer need TypeScript or `ts-node` to run your app. You just tell Node.js to run the compiled JavaScript directly (e.g., `node dist/index.js`).
+
+**Why this is better for Production:**
+Because the compilation work was already done beforehand during the "build" step, the server runs the code instantly with zero overhead.
+
+
+
+
+Q: Ok so i am trying now manual way, so changed my package.json scripts.
+now i am trying to run tsc -w cmd in terminal to compile, but its showing bash: tsc : command not found
+
+
+A: Edited important_notes.docs
+Edited important_notes.txt
+Edited index.ts
+Edited package.json
+Viewed package.json:2-13
+Ran command: `tsc -w`
+Ran command: `ls`
+Ran command: `cd src/`
+Ran command: `ls`
+Ran command: `tsc -w`
+
+The error `bash: tsc: command not found` happens because TypeScript (`tsc`) is installed locally inside your project's `node_modules` folder, rather than globally on your system's environment path.
+
+To run it, you have three options:
+
+### Option 1: Use `npx` (Easiest & Recommended)
+Prefix the command with `npx`. This tells npm to look inside your local `node_modules/.bin` directory and execute the command from there:
+```bash
+npx tsc -w
+```
+
+### Option 2: Add it as a Script in `package.json`
+You can define it in your `package.json` script section:
+```json
+"scripts": {
+  "watch": "tsc -w",
+  "dev": "node dist/index.js"
+}
+```
+Then run it in the terminal using:
+```bash
+npm run watch
+```
+*(NPM scripts automatically look inside `node_modules` for binary commands like `tsc`, so you don't need `npx` here).*
+
+### Option 3: Call the local binary path directly
+You can specify the exact path to the local TypeScript compiler binary:
+```bash
+./node_modules/.bin/tsc -w
+```
