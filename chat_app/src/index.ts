@@ -13,14 +13,21 @@ const client = new OpenAI({
 
 async function main() {
     const input = promptSync({ sigint: true });
-    const userInput = input("Enter your message: ");
-    
-    const chatCompletion = await client.chat.completions.create({
-        model: "gemini-2.5-flash",
-        messages: [{ role: "user", content: userInput }],
-        max_tokens: 50
-    });
-    console.log("chatCompletion:", chatCompletion?.choices[0]?.message.content);
+    while(true){
+
+        const userInput = input("Enter your message: ");
+        if(userInput.toLowerCase() === "exit") {
+            console.log("Exiting the chat app. Goodbye!");
+            break;
+        }
+        
+        const chatCompletion = await client.chat.completions.create({
+            model: "gemini-2.5-flash",
+            messages: [{ role: "user", content: userInput }],
+            max_tokens: 50
+        });
+        console.log("chatCompletion:", chatCompletion?.choices[0]?.message.content);
+    }
 }
 
 main();
